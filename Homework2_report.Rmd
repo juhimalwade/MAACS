@@ -6,16 +6,19 @@ output: html_document
 
 ## Name
 
-Please enter your name here.
+Juhi Malwade
 
 ### Setup
 
 Read in the data with `read_csv()` and store the data as an R object named `dataset`. Check the data to make sure all of the expected observations and variables are there.
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ## Load the data and any necessary packages here.
-
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+dataset = read_csv('maacs.csv.gz')
 ```
 
 ## Part 1
@@ -30,8 +33,24 @@ NOTE: In order to write this function, you will need to translate the statement 
 
 NOTE: For this part, do not use any plots.
 
-```{r}
+```{r,message=FALSE, warning=FALSE}
 ## Write your function here
+FEV1_age = function(dataset) {
+  younger = dataset[dataset$age < 13,]
+  older = dataset[dataset$age >= 13,]
+  
+  FEV1_young = mean(younger$fev1, na.rm = TRUE)
+  FEV1_old = mean(older$fev1, na.rm = TRUE)
+  
+  if (FEV1_old > FEV1_young) {
+    return(TRUE)
+  }
+  else {
+    return(FALSE)
+  }
+}  
+
+FEV1_age(dataset)
 
 ```
 
@@ -42,15 +61,10 @@ Fit a linear regression model with FEV1 as the outcome and age as a predictor.
 
 How much does FEV1 change for a 1-year increase in the child's age? 
 
-```{r}
-## Add your code here
-
+```{r,message=FALSE, warning=FALSE}
+lm(dataset$fev1 ~ dataset$age)
 ```
-
-
-Write your data analysis statement interpreting the regression model here:
-
-
+The linear regression model has FEV1 as the outcome and age as a predictor. The slope of this model is 0.171162. This means for every 1-year increase in the child's age, the model predicts that FEV1 will increase by 0.171162.
 
 ## Part 3
 
@@ -62,19 +76,35 @@ NOTE:
 
 * Do not use the code you write in Part 1 as a supporting premise
 
-```{r}
-## Add your code here
+```{r, message=FALSE, warning=FALSE}
 
+#Premise 1
+ggplot(dataset) + 
+  aes(x = age, y = fev1) + 
+  geom_point() + 
+  geom_smooth(method = "lm") + 
+  labs(title = "Fev1 vs Age")
+
+#Premise 2
+data_rounded = dataset
+data_rounded$age = round(data_rounded$age)
+
+ggplot(data_rounded) + 
+  aes(x= factor(age), y=fev1) + 
+  geom_boxplot() + 
+  labs(title = "Fev1 vs Age", x = "age (rounded)")
+
+#Premise 3
+cor(dataset$fev1, dataset$age, use = "complete.obs")
 ```
-
 
 Write the three supporting premise statements here:
 
-1. 
+1. The line of best fit passing through the scatterplot of FEV1 vs age has a positive slope, indicating that as age increased, the FEV1 values also increased.
 
-2. 
+2. The boxplots of the distribution of FEV1 values have higher medians for older ages compared to younger ages.
 
-3. 
+3. The correlation between FEV1 and age is 0.806, indicating a strong, positive correlation and that FEV1 increases with age. 
 
 
 ## Part 4
@@ -88,26 +118,56 @@ For statements involving plots, instead of returning `TRUE` or `FALSE`, you func
 2. Produce a hypothetical version of the plot in the event that the statement is true. This can be done using simulated data or by simply hand drawing a plot.
 
 
-```{r}
+```{r,message=FALSE, warning=FALSE}
 ## Function for supporting premise statement 1
 
+premise1 <- function(dataset) {
+  scatter <- ggplot(dataset) + 
+    aes(x = age, y = fev1) + 
+    geom_point() + 
+    geom_smooth(method = "lm") + 
+    labs(title = "Scatterplot of Fev1 vs Age")
+  print(scatter)
+  
+  knitr::include_graphics("images/premise1-plot.jpeg")
+}
+
+premise1(dataset)
 ```
 
 
-```{r}
+```{r,message=FALSE, warning=FALSE}
 ## Function for supporting premise statement 2
 
+premise2 = function(dataset) {
+  data_rounded = dataset
+  data_rounded$age = round(data_rounded$age)
+
+  boxplots = ggplot(data_rounded) + 
+    aes(x= factor(age), y=fev1) + 
+    geom_boxplot() + 
+    labs(title = "Boxplots of Fev1 vs Age", x = "age (rounded)")
+  print(boxplots)
+  
+  knitr::include_graphics("images/premise2-plot.jpeg")
+}
+
+premise2(dataset)
+
 ```
 
 
-```{r}
+```{r,message=FALSE, warning=FALSE}
 ## Function for supporting premise statement 3
 
+premise3 <- function(dataset) {
+  corr <- cor(dataset$fev1, dataset$age, use = "complete.obs")
+  return(corr > 0)
+}
+
+premise3(dataset)
+
 ```
-
-Execute each of your function and show that the produce the expected output.
-
-
 
 
 ## Part 5
@@ -118,4 +178,5 @@ Create a fault tree for the alternative outcome describing how the alternative o
 
 Your fault tree should be created as a separate image and does not need to be created in R. Upload the image of the fault tree to Canvas.
 
+#### Alternative: FEV1 values in children are not higher in older children relative to younger children.
 
