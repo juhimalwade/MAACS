@@ -129,7 +129,7 @@ premise1 <- function(dataset) {
     labs(title = "Scatterplot of Fev1 vs Age")
   print(scatter)
   
-  knitr::include_graphics("images/premise1-plot.jpeg")
+  knitr::include_graphics("premise1-plot.jpeg")
 }
 
 premise1(dataset)
@@ -149,7 +149,7 @@ premise2 = function(dataset) {
     labs(title = "Boxplots of Fev1 vs Age", x = "age (rounded)")
   print(boxplots)
   
-  knitr::include_graphics("images/premise2-plot.jpeg")
+  knitr::include_graphics("premise2-plot.jpeg")
 }
 
 premise2(dataset)
