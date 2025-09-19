@@ -4,9 +4,7 @@ output: html_document
 ---
 
 
-## Name
-
-Juhi Malwade
+## Juhi Malwade
 
 ### Setup
 
